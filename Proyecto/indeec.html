@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIMTELE-WEB | Sistema de Monitoreo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE INICIO DE SESIÓN OBLIGATORIA AL INICIAR -->
+  <div id="pantalla-login" class="login-overlay">
+    <div class="login-card">
+      <div class="franja-lineas">
+        <span class="l-roja"></span><span class="l-amarilla"></span><span class="l-verde"></span>
+        <span class="l-azul"></span><span class="l-celeste"></span><span class="l-naranja"></span>
+        <span class="l-morada"></span><span class="l-plateada"></span>
+      </div>
+      <h2>🚡 MI-TELEFERICO</h2>
+      <p class="subtitulo-login">Control Central de Operaciones</p>
+      
+      <form id="form-login">
+        <div class="campo">
+          <label for="usuario">ID de Operador:</label>
+          <input type="text" id="usuario" placeholder="Ej: OP-LA-PAZ" required>
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña:</label>
+          <input type="password" id="clave" placeholder="Mínimo 4 caracteres" required>
+        </div>
+        <button type="submit" class="btn-teleferico">Ingresar al Sistema</button>
+        <p id="msg-login" class="mensaje"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- INTERFAZ PRINCIPAL DEL SISTEMA (OCULTA HASTA INICIAR SESIÓN) -->
+  <div id="app-principal" class="oculto">
+    <!-- FRANJA DE COLORES DE LÍNEAS -->
+    <div class="franja-lineas">
+      <span class="l-roja"></span><span class="l-amarilla"></span><span class="l-verde"></span>
+      <span class="l-azul"></span><span class="l-celeste"></span><span class="l-naranja"></span>
+      <span class="l-morada"></span><span class="l-plateada"></span>
+    </div>
+
+    <!-- ENCABEZADO Y MENÚ -->
+    <header>
+      <div class="header-container">
+        <div class="logo-titulo">
+          <h1>🚡 SIMTELE-WEB</h1>
+          <span id="badge-operador" class="badge-op"></span>
+        </div>
+        <button id="btn-menu" class="menu-toggle" aria-label="Abrir menú">☰</button>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="#mod-detencion">Detención</a></li>
+            <li><a href="#mod-mantenimiento">Mantenimiento</a></li>
+            <li><a href="#mod-viento">Viento</a></li>
+            <li><a href="#mod-sensores">Sensores</a></li>
+            <li><a href="#mod-bitacora">Bitácora</a></li>
+            <li><button id="btn-cerrar-sesion" class="btn-salir">Cerrar Sesión</button></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- CONTENIDO DE MÓDULOS -->
+    <main>
+      <!-- MÓDULO 1: DETENCIÓN DE EMERGENCIA -->
+      <section id="mod-detencion" class="card borde-rojo">
+        <h2>1. Detención de Emergencia</h2>
+        <p class="ayuda">Cálculo de frenado por reacción: <code>d = (v / 3.6) × t</code> · Límite: <strong>50 m</strong>.</p>
+        
+        <form id="form-detencion">
+          <div class="fila-inputs">
+            <div class="campo">
+              <label for="velocidad">Velocidad de línea (km/h):</label>
+              <input type="number" id="velocidad" step="any" placeholder="Ej: 72">
+            </div>
+            <div class="campo">
+              <label for="tiempo">Tiempo de reacción (s):</label>
+              <input type="number" id="tiempo" step="any" placeholder="Ej: 3">
+            </div>
+          </div>
+          <button type="submit">Calcular Distancia</button>
+        </form>
+        <div id="res-detencion" class="resultado"></div>
+      </section>
+
+      <!-- MÓDULO 2: MANTENIMIENTO -->
+      <section id="mod-mantenimiento" class="card borde-amarillo">
+        <h2>2. Registro de Mantenimiento</h2>
+        <p class="ayuda">Control preventivo de torres, poleas y cabinas.</p>
+        
+        <form id="form-mantenimiento">
+          <div class="fila-inputs">
+            <div class="campo">
+              <label for="componente">Componente / Línea:</label>
+              <input type="text" id="componente" placeholder="Ej: Polea Motriz Línea Roja">
+            </div>
+            <div class="campo">
+              <label for="horas">Horas de operación:</label>
+              <input type="number" id="horas" placeholder="Ej: 1200">
+            </div>
+            <div class="campo">
+              <label for="estado">Estado:</label>
+              <select id="estado">
+                <option value="Normal">Normal</option>
+                <option value="Revisión">Revisión</option>
+                <option value="Urgente">Urgente</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit">Agregar Registro</button>
+        </form>
+        <p id="msg-mantenimiento" class="mensaje"></p>
+
+        <div class="tabla-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>Horas</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-mantenimiento"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MÓDULO 3: VIENTO Y OSCILACIÓN -->
+      <section id="mod-viento" class="card borde-verde">
+        <h2>3. Viento y Oscilación</h2>
+        <p class="ayuda">Ingrese 5 lecturas de anemómetros (km/h): &lt;25 Normal · 25-40 Precaución · &gt;40 Alerta.</p>
+        
+        <form id="form-viento">
+          <div class="grid-viento">
+            <input type="number" class="input-viento" placeholder="Estación 1">
+            <input type="number" class="input-viento" placeholder="Estación 2">
+            <input type="number" class="input-viento" placeholder="Estación 3">
+            <input type="number" class="input-viento" placeholder="Estación 4">
+            <input type="number" class="input-viento" placeholder="Estación 5">
+          </div>
+          <button type="submit">Analizar Viento</button>
+        </form>
+        <div id="res-viento" class="resultado"></div>
+      </section>
+
+      <!-- MÓDULO 4: SENSORES -->
+      <section id="mod-sensores" class="card borde-azul">
+        <h2>4. Validación de Sensores</h2>
+        <p class="ayuda">Código estándar requerido: <strong>SEN-000</strong>.</p>
+        
+        <form id="form-sensores">
+          <div class="fila-inputs">
+            <div class="campo">
+              <label for="cod-sensor">Código:</label>
+              <input type="text" id="cod-sensor" placeholder="Ej: SEN-001">
+            </div>
+            <div class="campo">
+              <label for="tipo-sensor">Tipo de Sensor:</label>
+              <select id="tipo-sensor">
+                <option value="Tensión de Cable">Tensión de Cable</option>
+                <option value="Temperatura Motor">Temperatura Motor</option>
+                <option value="Velocidad Viento">Velocidad Viento</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="lectura-sensor">Lectura:</label>
+              <input type="number" id="lectura-sensor" step="any" placeholder="Ej: 45.5">
+            </div>
+          </div>
+          <button type="submit">Registrar Sensor</button>
+        </form>
+        <p id="msg-sensor" class="mensaje"></p>
+        <ul id="lista-sensores" class="lista-registros"></ul>
+      </section>
+
+      <!-- MÓDULO EXTRA: BITÁCORA DE ACCESOS Y AUDITORÍA (LOCALSTORAGE) -->
+      <section id="mod-bitacora" class="card borde-morado">
+        <div class="header-bitacora">
+          <h2>5. Registro de Sesión y Actividad (LocalStorage)</h2>
+          <button id="btn-limpiar-log" class="btn-eliminar">Limpiar Historial</button>
+        </div>
+        <p class="ayuda">Historial persistente de inicios de sesión y operaciones con fecha y hora local.</p>
+        <ul id="lista-bitacora" class="lista-bitacora"></ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>SIMTELE-WEB · Sistema Integrado de Monitoreo · La Paz - El Alto</p>
+    </footer>
+  </div>
+
+  <script src="java script/java.js"></script>
+</body>
+</html>
